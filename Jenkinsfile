@@ -2,8 +2,7 @@ pipeline {
     agent any
 
     tools {
-        // Stellen Sie sicher, dass Gradle korrekt konfiguriert ist in den globalen Jenkins-Tools
-        gradle 2.9 // Ersetzen Sie 'Gradle_Version' mit dem Namen der Gradle-Version, die in Ihren Jenkins-Tools konfiguriert ist
+        gradle 2.9
     }
 
     stages {
@@ -17,7 +16,6 @@ pipeline {
         stage('Build and Test') {
             steps {
                 script {
-                    // Nutzt den Gradle Wrapper im Projekt, um Build und Tests auszuführen
                     sh './gradlew clean build'
                 }
             }
@@ -25,7 +23,6 @@ pipeline {
 
         stage('Publish Reports') {
             steps {
-                // Pfad zum Jacoco Report entsprechend anpassen, wenn notwendig
                 jacoco(
                     execPattern: '**/build/jacoco/test.exec',
                     classPattern: '**/build/classes/java/main',
