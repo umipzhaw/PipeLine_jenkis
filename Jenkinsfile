@@ -1,9 +1,11 @@
 pipeline {
     agent any
+
     tools {
-        // Definiere Maven, wenn es in Jenkins konfiguriert ist. Stelle sicher, dass der Name mit dem in der Jenkins-Konfiguration übereinstimmt.
-        maven 'Maven_3_6_3'
+        // Stellen Sie sicher, dass Gradle korrekt konfiguriert ist in den globalen Jenkins-Tools
+        gradle 'Gradle_Version' // Ersetzen Sie 'Gradle_Version' mit dem Namen der Gradle-Version, die in Ihren Jenkins-Tools konfiguriert ist
     }
+
     stages {
         stage('Preparation') {
             steps {
@@ -11,35 +13,29 @@ pipeline {
                 git url: 'https://github.com/umipzhaw/DevOpsDemo.git', branch: 'main'
             }
         }
+        
         stage('Build and Test') {
             steps {
                 script {
-                    // Ändere auf Maven oder belasse es bei Gradle, abhängig von deinem Projektsetup
-                    sh './gradlew clean test jacocoTestReport'
-                    // Für Maven könnte es folgendermaßen aussehen:
-                    // sh 'mvn clean test jacoco:report'
+                    // Nutzt den Gradle Wrapper im Projekt, um Build und Tests auszuführen
+                    sh './gradlew clean build'
                 }
             }
         }
-        stage('Publish Jacoco Report') {
+
+        stage('Publish Reports') {
             steps {
-                // Achte auf die korrekte Angabe der Pfadangaben je nach Build-Tool
+                // Pfad zum Jacoco Report entsprechend anpassen, wenn notwendig
                 jacoco(
-                    execPattern: '**/build/jacoco/test.exec', // Für Gradle
-                    classPattern: '**/build/classes/java/main', // Für Gradle
+                    execPattern: '**/build/jacoco/test.exec',
+                    classPattern: '**/build/classes/java/main',
                     sourcePattern: '**/src/main/java',
                     changeBuildStatus: false
                 )
-                // Für Maven könnte es folgendermaßen aussehen:
-                // jacoco(
-                //     execPattern: '**/target/jacoco.exec', // Für Maven
-                //     classPattern: '**/target/classes', // Für Maven
-                //     sourcePattern: '**/src/main/java',
-                //     changeBuildStatus: false
-                // )
             }
         }
     }
+
     post {
         always {
             echo 'Cleaning up workspace'
@@ -47,3 +43,4 @@ pipeline {
         }
     }
 }
+
