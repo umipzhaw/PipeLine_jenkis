@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         // Stellen Sie sicher, dass Gradle korrekt konfiguriert ist in den globalen Jenkins-Tools
-        gradle 'Gradle_Version' // Ersetzen Sie 'Gradle_Version' mit dem Namen der Gradle-Version, die in Ihren Jenkins-Tools konfiguriert ist
+        gradle 2.11 // Ersetzen Sie 'Gradle_Version' mit dem Namen der Gradle-Version, die in Ihren Jenkins-Tools konfiguriert ist
     }
 
     stages {
