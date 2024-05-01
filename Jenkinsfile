@@ -1,42 +1,29 @@
 pipeline {
     agent any
-    environment {
-        GIT_URL = 'https://github.com/umipzhaw/DevOpsDemo'
-        BRANCH = '*/main'
-        
+    tools {
     }
     stages {
-        stage('Checkout') {
+        stage('Preparation') {
             steps {
-                echo 'Checking out repository'
-                checkout([
-                    $class: 'GitSCM', 
-                    branches: [[name: env.BRANCH]],
-                    userRemoteConfigs: [[url: env.GIT_URL]]
-                ])
+                cleanWs()
+                git url: 'https://github.com/umipzhaw/DevOpsDemo.git', branch: 'main'
             }
         }
-        stage('Test') {
+        stage('Build and Test') {
             steps {
                 script {
-                    sh 'mvn clean test jacoco:report'
-                }
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/TEST-*.xml'
-                    jacoco(
-                        execPattern: '**/target/jacoco.exec',
-                        classPattern: '**/classes',
-                        sourcePattern: '**/src/main/java',
-                        changeBuildStatus: true
-                    )
+                    sh './gradlew clean test jacocoTestReport'
                 }
             }
         }
-        stage('Deploy') {
+        stage('Publish Jacoco Report') {
             steps {
-                echo 'Deployment needs customization based on your environment'
+                jacoco(
+                    execPattern: '**/target/jacoco.exec',
+                    classPattern: '**/classes',
+                    sourcePattern: '**/src/main/java',
+                    changeBuildStatus: false
+                )
             }
         }
     }
