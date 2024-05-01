@@ -1,43 +1,29 @@
 pipeline {
     agent any
-
-    tools {
-        gradle 'Gradle 8.5'
-    }
-
     stages {
-        stage('Preparation') {
+        stage('Checkout') {
             steps {
-                cleanWs()
-                git url: 'https://github.com/umipzhaw/DevOpsDemo.git', branch: 'main'
+                sh 'echo checkout'
+                checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/umipzhaw/DevOpsDemo']])
             }
         }
-        
-        stage('Build and Test') {
+        stage('Test') {
             steps {
-                script {
-                    sh './gradlew clean build'
-                }
+                sh 'echo test'
             }
         }
-
-        stage('Publish Reports') {
+        stage('Deploy') {
             steps {
-                jacoco(
-                    execPattern: '**/build/jacoco/test.exec',
-                    classPattern: '**/build/classes/java/main',
-                    sourcePattern: '**/src/main/java',
-                    changeBuildStatus: false
-                )
+                sh 'echo deploy'
             }
         }
     }
-
     post {
         always {
-            echo 'Cleaning up workspace'
-            cleanWs()
+            script {
+                def gradleVersion = sh(script: 'gradle --version | grep Gradle', returnStdout: true).trim()
+                echo "Gradle-Version: ${gradleVersion}"
+            }
         }
     }
 }
-
