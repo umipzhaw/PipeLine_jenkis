@@ -1,0 +1,48 @@
+pipeline {
+    agent any
+    environment {
+        GIT_URL = 'https://github.com/umipzhaw/DevOpsDemo'
+        BRANCH = '*/main'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out repository'
+                checkout([
+                    $class: 'GitSCM', 
+                    branches: [[name: env.BRANCH]],
+                    userRemoteConfigs: [[url: env.GIT_URL]]
+                ])
+            }
+        }
+        stage('Test') {
+            steps {
+                script {
+                    sh 'mvn clean test jacoco:report'
+                }
+            }
+            post {
+                always {
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    jacoco(
+                        execPattern: '**/target/jacoco.exec',
+                        classPattern: '**/classes',
+                        sourcePattern: '**/src/main/java',
+                        changeBuildStatus: true
+                    )
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deployment needs customization based on your environment'
+            }
+        }
+    }
+    post {
+        always {
+            echo 'Cleaning up workspace'
+            cleanWs()
+        }
+    }
+}
