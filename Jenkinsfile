@@ -7,10 +7,25 @@ pipeline {
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/umipzhaw/DevOpsDemo']])
             }
         }
+        stage('Setup Tools') {
+            steps {
+                script {
+                    sh '''
+                    if ! type "curl" > /dev/null; then
+                      echo "curl is not installed. Attempting to install..."
+                      apt-get update && apt-get install -y curl
+                    fi
+                    if ! type "unzip" > /dev/null; then
+                      echo "unzip is not installed. Attempting to install..."
+                      apt-get update && apt-get install -y unzip
+                    fi
+                    '''
+                }
+            }
+        }
         stage('Setup Gradle') {
             steps {
                 script {
-                    // Prüft, ob Gradle installiert ist, und installiert es, wenn es fehlt, mit curl statt wget
                     sh '''
                     if ! type "gradle" > /dev/null; then
                       echo "Installing Gradle"
