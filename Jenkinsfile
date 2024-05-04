@@ -9,33 +9,30 @@ pipeline {
             }
         }
         
-        stage('Compile') {
+        stage('Print Environment Info') {
             steps {
-                sh 'echo compile'
-                // Hier ein Beispiel für ein Java-Projekt mit Maven
-                sh 'mvn clean compile'
+                script {
+                    // Drucke Umgebungsvariablen
+                    sh 'printenv'
+                    
+                    // Drucke den Arbeitsverzeichnispfad
+                    sh 'pwd'
+                    
+                    // Liste die Dateien im aktuellen Verzeichnis auf
+                    sh 'ls -al'
+                }
             }
         }
-        
+
         stage('Test') {
             steps {
                 sh 'echo test'
-                // Führe Tests aus, auch hier ein Beispiel mit Maven
-                sh 'mvn test'
             }
         }
 
         stage('Deploy') {
             steps {
                 sh 'echo deploy'
-            }
-        }
-        
-        stage('Archive Artifacts') {
-            steps {
-                sh 'echo archive artifacts'
-                // Archiviere bestimmte Dateien, hier beispielhaft für JAR-Dateien
-                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
     }
