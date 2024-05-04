@@ -1,29 +1,28 @@
 pipeline {
-    agent any
+    agent {
+        docker { image 'mein-jenkins-gradle:latest' }
+    }
     stages {
         stage('Checkout') {
             steps {
-                sh 'echo checkout'
+                sh 'echo "Checking out..."'
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/umipzhaw/DevOpsDemo']])
             }
         }
         stage('Build') {
             steps {
-                script {
-                    sh 'gradle build'
-                }
+                sh 'gradle build'
             }
         }
         stage('Test') {
             steps {
-                script {
-                    sh 'gradle test'
-                }
+                sh 'echo "Running tests..."'
+                sh 'gradle test'
             }
         }
         stage('Deploy') {
             steps {
-                sh 'echo deploy'
+                sh 'echo "Deploying application..."'
             }
         }
     }
