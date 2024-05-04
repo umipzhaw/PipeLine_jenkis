@@ -1,28 +1,41 @@
 pipeline {
-    agent {
-        docker { image 'mein-jenkins-gradle:latest' }
-    }
+    agent any
+
     stages {
         stage('Checkout') {
             steps {
-                sh 'echo "Checking out..."'
+                sh 'echo checkout'
                 checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/umipzhaw/DevOpsDemo']])
             }
         }
-        stage('Build') {
+        
+        stage('Compile') {
             steps {
-                sh 'gradle build'
+                sh 'echo compile'
+                // Hier ein Beispiel für ein Java-Projekt mit Maven
+                sh 'mvn clean compile'
             }
         }
+        
         stage('Test') {
             steps {
-                sh 'echo "Running tests..."'
-                sh 'gradle test'
+                sh 'echo test'
+                // Führe Tests aus, auch hier ein Beispiel mit Maven
+                sh 'mvn test'
             }
         }
+
         stage('Deploy') {
             steps {
-                sh 'echo "Deploying application..."'
+                sh 'echo deploy'
+            }
+        }
+        
+        stage('Archive Artifacts') {
+            steps {
+                sh 'echo archive artifacts'
+                // Archiviere bestimmte Dateien, hier beispielhaft für JAR-Dateien
+                archiveArtifacts artifacts: '**/target/*.jar', fingerprint: true
             }
         }
     }
